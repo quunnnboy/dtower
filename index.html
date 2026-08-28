@@ -3,84 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#1a1a1a">
-
   <title>Dice Tower Controller</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; background: #1a1a1a; color: #fff; }
-    button { display: block; width: 80%; max-width: 300px; margin: 12px auto; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
-    .btn-connect { background: #2196F3; color: white; }
-    .btn-red { background: #e53935; color: white; }
-    .btn-blue { background: #1e88e5; color: white; }
+    body { font-family: sans-serif; text-align: center; padding: 15px; background: #1a1a1a; color: #fff; }
+    button { 
+      display: block; width: 100%; padding: 15px; font-size: 16px; 
+      font-weight: bold; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; 
+    }
+    button:active { transform: scale(0.95); }
+    
+    .btn-connect { background: #2196F3; color: white; width: 80%; max-width: 300px; margin: 10px auto; }
+    
+    /* Paneel styling */
+    .control-panel {
+      margin: 15px auto; padding: 15px; background: #333;
+      border-radius: 12px; width: 90%; max-width: 350px; box-sizing: border-box;
+    }
+    .control-panel p { margin: 0 0 10px 0; font-weight: bold; font-size: 15px; text-align: left; }
+    
+    input[type="color"] {
+      -webkit-appearance: none; border: none; width: 100%; height: 50px;
+      border-radius: 8px; cursor: pointer; background: none;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 2px solid #fff; border-radius: 8px; }
+    input[type="range"] { width: 100%; margin: 10px 0; }
+
+    /* CSS Grid voor de knoppen BINNEN de panelen */
+    .effect-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;
+    }
+    .btn-full { grid-column: span 2; }
+    
+    /* Effect kleuren */
+    .btn-crit { background: #ffd700; color: black; }
     .btn-fire { background: #fb8c00; color: white; }
     .btn-rainbow { background: linear-gradient(45deg, #f06, #4a90e2); color: white; }
-    .btn-crit { background: #ffd700; color: black; }
-    .btn-off { background: #424242; color: white; }
+    .btn-breath { background: #8e44ad; color: white; }
+    .btn-swirl { background: #2ecc71; color: black; }
+    .btn-heart { background: #c0392b; color: white; }
+    .btn-spark { background: #f39c12; color: black; }
+    .btn-light { background: #607d8b; color: white; }
+    
+    .btn-off { background: #424242; color: white; width: 90%; max-width: 350px; margin: 20px auto 40px auto; }
+
   </style>
 </head>
 <body>
 
-  <h2>🎲 Dice Tower Controller</h2>
+  <h2>🎲 Dice Tower</h2>
   <button class="btn-connect" onclick="connectBLE()">🔗 Verbind met Toren</button>
 
-  <hr style="margin: 20px 0; border: 0.5px solid #333;">
+  <!-- PANEEL 1: Custom Kleur + Bijbehorende Effecten -->
+  <div class="control-panel">
+    <p>🎨 Basiskleur & Effecten:</p>
+    <input type="color" id="customColor" value="#ff0000">
+    
+    <div class="effect-grid">
+      <button class="btn-swirl" onclick="sendCommand('SWIRL')">🌀 Swirl</button>
+      <button class="btn-heart" onclick="sendCommand('HEART')">❤️ Hartslag</button>
+      <button class="btn-breath" onclick="sendCommand('BREATH')">💨 Adem</button>
+      <button class="btn-spark" onclick="sendCommand('SPARK')">✨ Sparkle</button>
+    </div>
+  </div>
 
-  <button class="btn-red" onclick="sendCommand('RED')">Rood Licht</button>
-  <button class="btn-blue" onclick="sendCommand('BLUE')">Blauw Licht</button>
-  <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Vuur Effect</button>
-  <button class="btn-rainbow" onclick="sendCommand('RAINBOW')">🌈 Rainbow Cycle</button>
-  <button class="btn-crit" onclick="sendCommand('CRIT')">✨ Natural 20 Flash</button>
+  <!-- PANEEL 2: Sliders -->
+  <div class="control-panel">
+    <p>💡 Helderheid: <span id="brightVal">30</span>%</p>
+    <input type="range" id="brightnessSlider" min="0" max="255" value="80">
+    <p style="margin-top: 15px;">⚡ Effect Snelheid: <span id="speedVal">50</span>%</p>
+    <input type="range" id="speedSlider" min="1" max="100" value="50">
+  </div>
+
+  <!-- PANEEL 3: Vaste Thema Effecten (Eigen kleuren) -->
+  <div class="control-panel">
+    <p>🔮 Vaste Thema Effecten:</p>
+    <div class="effect-grid">
+      <button class="btn-crit btn-full" onclick="sendCommand('CRIT')">✨ Natural 20 Flash</button>
+      <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Vuur</button>
+      <button class="btn-rainbow" onclick="sendCommand('RAINBOW')">🌈 Rainbow</button>
+      <button class="btn-light btn-full" onclick="sendCommand('LIGHT')">⛈️ Bliksemstorm</button>
+    </div>
+  </div>
+
+  <!-- Uitzetten -->
   <button class="btn-off" onclick="sendCommand('OFF')">Uitzetten</button>
 
   <script>
-    // Activeer de Service Worker voor offline gebruik
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('Offline modus is geactiveerd!'))
-        .catch(err => console.error('Service Worker fout:', err));
-    }
-  </script>
-  
-  <script>
-    // Exact dezelfde Nordic UART Service UUID's als in je ESP32 C++ code:
     const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     const RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
     let rxCharacteristic = null;
+    let lastSendTime = 0; 
 
     async function connectBLE() {
       try {
-        console.log("Zoeken naar DiceTower_Skull...");
         const device = await navigator.bluetooth.requestDevice({
           filters: [{ name: 'DiceTower_Skull' }],
           optionalServices: [SERVICE_UUID]
         });
-
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
         rxCharacteristic = await service.getCharacteristic(RX_CHAR_UUID);
-        
-        alert("Succesvol verbonden met de Dice Tower!");
-      } catch (error) {
-        console.error("Verbinding mislukt:", error);
-        alert("Fout bij verbinden: " + error);
-      }
+        alert("Succesvol verbonden!");
+      } catch (error) { console.error("Verbinding mislukt:", error); }
     }
 
     async function sendCommand(command) {
-      if (!rxCharacteristic) {
-        alert("Verbind eerst via Bluetooth!");
-        return;
-      }
+      if (!rxCharacteristic) return;
       try {
         const encoder = new TextEncoder();
         await rxCharacteristic.writeValue(encoder.encode(command));
-        console.log("Verzonden:", command);
-      } catch (error) {
-        console.error("Verzenden mislukt:", error);
-      }
+      } catch (error) { console.error("Fout:", error); }
     }
+
+    // Color Picker
+    document.getElementById('customColor').addEventListener('input', function(e) {
+      const now = Date.now();
+      if (now - lastSendTime > 50) { 
+        sendCommand(e.target.value.toUpperCase());
+        lastSendTime = now;
+      }
+    });
+
+    // Sliders
+    document.getElementById('brightnessSlider').addEventListener('input', function(e) {
+      document.getElementById('brightVal').innerText = Math.round((e.target.value / 255) * 100);
+      const now = Date.now();
+      if (now - lastSendTime > 50) { sendCommand("BR:" + e.target.value); lastSendTime = now; }
+    });
+
+    document.getElementById('speedSlider').addEventListener('input', function(e) {
+      document.getElementById('speedVal').innerText = e.target.value;
+      const now = Date.now();
+      if (now - lastSendTime > 50) { sendCommand("SP:" + e.target.value); lastSendTime = now; }
+    });
+
+    // Definitieve verzending bij loslaten
+    document.getElementById('customColor').addEventListener('change', (e) => sendCommand(e.target.value.toUpperCase()));
+    document.getElementById('brightnessSlider').addEventListener('change', (e) => sendCommand("BR:" + e.target.value));
+    document.getElementById('speedSlider').addEventListener('change', (e) => sendCommand("SP:" + e.target.value));
   </script>
 </body>
 </html>

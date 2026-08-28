@@ -12,56 +12,56 @@
 <body>
 
   <h2>🎲 Dice Tower</h2>
-  <button class="btn-connect" onclick="connectBLE()">🔗 Verbind met Toren</button>
+  <button class="btn-connect" onclick="connectBLE()">🔗 Connect your device</button>
 
   <!-- PANEEL 1: Custom Kleur + Bijbehorende Effecten -->
   <div class="control-panel">
-    <p>🎨 Basiskleur & Effecten:</p>
+    <p>🎨 Basic Color & Effects:</p>
     <input type="color" id="customColor" value="#ff0000">
     
     <div class="effect-grid">
+      <!-- DE NIEUWE STEADY KNOP -->
+      <button class="btn-solid btn-full" onclick="sendCommand('SOLID')">🛑 Steady Color</button>
+      
       <button class="btn-swirl" onclick="sendCommand('SWIRL')">🌀 Swirl</button>
-      <button class="btn-heart" onclick="sendCommand('HEART')">❤️ Hartslag</button>
-      <button class="btn-breath" onclick="sendCommand('BREATH')">💨 Adem</button>
+      <button class="btn-heart" onclick="sendCommand('HEART')">❤️ Heartbeat</button>
+      <button class="btn-breath" onclick="sendCommand('BREATH')">💨 Breathe</button>
       <button class="btn-spark" onclick="sendCommand('SPARK')">✨ Sparkle</button>
     </div>
   </div>
 
   <!-- PANEEL 2: Sliders -->
   <div class="control-panel">
-    <p>💡 Helderheid: <span id="brightVal">30</span>%</p>
+    <p>💡 Brightness: <span id="brightVal">30</span>%</p>
     <input type="range" id="brightnessSlider" min="0" max="255" value="80">
-    <p style="margin-top: 15px;">⚡ Effect Snelheid: <span id="speedVal">50</span>%</p>
+    <p style="margin-top: 15px;">⚡ Effect Speed: <span id="speedVal">50</span>%</p>
     <input type="range" id="speedSlider" min="1" max="100" value="50">
   </div>
 
   <!-- PANEEL 3: Vaste Thema Effecten -->
   <div class="control-panel">
-    <p>🔮 Natuur & Magie Effecten:</p>
-    
-    <div class="effect-grid">
-      <button class="btn-crit btn-full" onclick="sendCommand('CRIT')">✨ Natural 20 Flash</button>
-      <button class="btn-rainbow btn-full" onclick="sendCommand('RAINBOW')">🌈 Rainbow</button>
-      <button class="btn-light btn-full" onclick="sendCommand('LIGHT')">⛈️ Bliksemstorm</button>
-    </div>
+    <p>🔮 Nature & Magic Effects:</p>
 
     <hr style="margin: 15px 0; border: 0.5px solid #555;">
     
     <div class="effect-grid">
-      <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Vuur</button>
-      <button class="btn-volc" onclick="sendCommand('VOLC')">🌋 Vulkaan</button>
+      <button class="btn-rainbow btn" onclick="sendCommand('RAINBOW')">🌈 Rainbow</button>
+      <button class="btn-light btn" onclick="sendCommand('LIGHT')">⛈️ Lightning</button>
+
+      <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Fire</button>
+      <button class="btn-volc" onclick="sendCommand('VOLC')">🌋 Vulcano</button>
       
-      <button class="btn-forest" onclick="sendCommand('FOREST')">🌲 Bos</button>
+      <button class="btn-forest" onclick="sendCommand('FOREST')">🌲 Forrest</button>
       <button class="btn-astral" onclick="sendCommand('ASTRAL')">🌌 Nova</button>
       
-      <button class="btn-ice" onclick="sendCommand('ICE')">🧊 IJs</button>
-      <button class="btn-rain" onclick="sendCommand('RAIN')">🌧️ Regen</button>
+      <button class="btn-ice" onclick="sendCommand('ICE')">🧊 Ice</button>
+      <button class="btn-rain" onclick="sendCommand('RAIN')">🌧️ Rain</button>
       
-      <button class="btn-sea btn-full" onclick="sendCommand('SEA')">🌊 Diepzee Abyss</button>
+      <button class="btn-sea btn-full" onclick="sendCommand('SEA')">🌊 Deep Sea Abyss</button>
     </div>
   </div>
 
-  <button class="btn-off" onclick="sendCommand('OFF')">Uitzetten</button>
+  <button class="btn-off" onclick="sendCommand('OFF')">Turn Off</button>
 
   <!-- Koppeling naar je JavaScript bestand -->
   <script src="script.js"></script>

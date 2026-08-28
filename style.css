@@ -96,10 +96,12 @@ input[type="range"] {
 }
 
 /* Kleuren voor Dynamische Effecten */
+.btn-solid { background: #607d8b; color: white; } /* Grijze steady knop */
 .btn-swirl { background: #2ecc71; color: black; }
 .btn-heart { background: #c0392b; color: white; }
 .btn-breath { background: #8e44ad; color: white; }
 .btn-spark { background: #f39c12; color: black; }
+
 
 /* Kleuren voor Vaste Thema Effecten */
 .btn-crit { background: #ffd700; color: black; }
@@ -112,6 +114,7 @@ input[type="range"] {
 .btn-ice { background: #00cec9; color: black; }
 .btn-rain { background: #34495e; color: white; }
 .btn-sea { background: #130f40; color: #48dbfb; }
+
 
 .btn-off { 
   background: #424242; 

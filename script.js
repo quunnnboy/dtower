@@ -7,6 +7,8 @@ const RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
 let rxCharacteristic = null;
 let lastSendTime = 0; 
+let isSending = false;       // Toegevoegd voor de wachtrij
+let pendingCommand = null;   // Toegevoegd voor de wachtrij
 
 // Registreer de Service Worker voor de PWA (Offline app)
 if ('serviceWorker' in navigator) {
@@ -54,14 +56,31 @@ async function connectBLE() {
   }
 }
 
-// Commando's doorsturen naar de ESP32
+// Commando's doorsturen naar de ESP32 (Met ingebouwde wachtrij)
 async function sendCommand(command) {
   if (!rxCharacteristic) return;
+
+  // Als de Bluetooth-lijn bezet is, onthoud dan dit allernieuwste commando
+  if (isSending) {
+    pendingCommand = command;
+    return;
+  }
+
+  isSending = true;
   try {
     const encoder = new TextEncoder();
     await rxCharacteristic.writeValue(encoder.encode(command));
   } catch (error) { 
     console.error("Fout bij verzenden:", error); 
+  } finally {
+    isSending = false;
+    
+    // Zodra het verzenden klaar is, checken of je inmiddels alweer een nieuwe kleur/waarde hebt gekozen
+    if (pendingCommand) {
+      const nextCommand = pendingCommand;
+      pendingCommand = null;
+      sendCommand(nextCommand); // Stuur direct de nieuwste waarde door
+    }
   }
 }
 
@@ -70,7 +89,7 @@ async function sendCommand(command) {
 // Color Picker
 document.getElementById('customColor').addEventListener('input', function(e) {
   const now = Date.now();
-  if (now - lastSendTime > 50) { 
+  if (now - lastSendTime > 20) { // Verlaagd naar 20 voor meer smoothness
     sendCommand(e.target.value.toUpperCase());
     lastSendTime = now;
   }
@@ -84,7 +103,7 @@ document.getElementById('customColor').addEventListener('change', (e) => {
 document.getElementById('brightnessSlider').addEventListener('input', function(e) {
   document.getElementById('brightVal').innerText = Math.round((e.target.value / 255) * 100);
   const now = Date.now();
-  if (now - lastSendTime > 50) { 
+  if (now - lastSendTime > 20) { // Verlaagd naar 20 voor meer smoothness
     sendCommand("BR:" + e.target.value); 
     lastSendTime = now; 
   }
@@ -98,7 +117,7 @@ document.getElementById('brightnessSlider').addEventListener('change', (e) => {
 document.getElementById('speedSlider').addEventListener('input', function(e) {
   document.getElementById('speedVal').innerText = e.target.value;
   const now = Date.now();
-  if (now - lastSendTime > 50) { 
+  if (now - lastSendTime > 30) { // Verlaagd naar 20 voor meer smoothness
     sendCommand("SP:" + e.target.value); 
     lastSendTime = now; 
   }

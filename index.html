@@ -14,23 +14,22 @@
   <h2>🎲 Dice Tower</h2>
   <button class="btn-connect" onclick="connectBLE()">🔗 Connect your device</button>
 
-  <!-- PANEEL 1: Custom Kleur + Bijbehorende Effecten -->
+<!-- PANEEL 1: Custom Kleur + Bijbehorende Effecten -->
   <div class="control-panel">
     <p>🎨 Basic Color & Effects:</p>
     <input type="color" id="customColor" value="#ff0000">
     
     <div class="effect-grid">
-      <!-- DE NIEUWE STEADY KNOP -->
-      <button class="btn-solid btn-full" onclick="sendCommand('SOLID')">🛑 Steady Color</button>
+      <button class="effect-btn btn-solid btn-full" data-cmd="SOLID" onclick="setEffect(this, 'SOLID')">Steady Color</button>
       
-      <button class="btn-swirl" onclick="sendCommand('SWIRL')">🌀 Swirl</button>
-      <button class="btn-heart" onclick="sendCommand('HEART')">❤️ Heartbeat</button>
-      <button class="btn-breath" onclick="sendCommand('BREATH')">💨 Breathe</button>
-      <button class="btn-spark" onclick="sendCommand('SPARK')">✨ Sparkle</button>
+      <button class="effect-btn btn-swirl" data-cmd="SWIRL" onclick="setEffect(this, 'SWIRL')">🌀 Swirl</button>
+      <button class="effect-btn btn-heart" data-cmd="HEART" onclick="setEffect(this, 'HEART')">❤️ Heartbeat</button>
+      <button class="effect-btn btn-breath" data-cmd="BREATH" onclick="setEffect(this, 'BREATH')">💨 Breathe</button>
+      <button class="effect-btn btn-spark" data-cmd="SPARK" onclick="setEffect(this, 'SPARK')">✨ Sparkle</button>
     </div>
   </div>
 
-  <!-- PANEEL 2: Sliders -->
+  <!-- PANEEL 2: Sliders (Blijft hetzelfde) -->
   <div class="control-panel">
     <p>💡 Brightness: <span id="brightVal">30</span>%</p>
     <input type="range" id="brightnessSlider" min="0" max="255" value="80">
@@ -41,27 +40,23 @@
   <!-- PANEEL 3: Vaste Thema Effecten -->
   <div class="control-panel">
     <p>🔮 Nature & Magic Effects:</p>
-
     <hr style="margin: 15px 0; border: 0.5px solid #555;">
     
     <div class="effect-grid">
-      <button class="btn-rainbow btn" onclick="sendCommand('RAINBOW')">🌈 Rainbow</button>
-      <button class="btn-light btn" onclick="sendCommand('LIGHT')">⛈️ Lightning</button>
-
-      <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Fire</button>
-      <button class="btn-volc" onclick="sendCommand('VOLC')">🌋 Vulcano</button>
-      
-      <button class="btn-forest" onclick="sendCommand('FOREST')">🌲 Forrest</button>
-      <button class="btn-astral" onclick="sendCommand('ASTRAL')">🌌 Nova</button>
-      
-      <button class="btn-ice" onclick="sendCommand('ICE')">🧊 Ice</button>
-      <button class="btn-rain" onclick="sendCommand('RAIN')">🌧️ Rain</button>
-      
-      <button class="btn-sea btn-full" onclick="sendCommand('SEA')">🌊 Deep Sea Abyss</button>
+      <button class="effect-btn btn-rainbow btn" data-cmd="RAINBOW" onclick="setEffect(this, 'RAINBOW')">🌈 Rainbow</button>
+      <button class="effect-btn btn-light btn" data-cmd="LIGHT" onclick="setEffect(this, 'LIGHT')">⛈️ Lightning</button>
+      <button class="effect-btn btn-fire" data-cmd="FIRE" onclick="setEffect(this, 'FIRE')">🔥 Fire</button>
+      <button class="effect-btn btn-volc" data-cmd="VOLC" onclick="setEffect(this, 'VOLC')">🌋 Vulcano</button>
+      <button class="effect-btn btn-forest" data-cmd="FOREST" onclick="setEffect(this, 'FOREST')">🌲 Forrest</button>
+      <button class="effect-btn btn-astral" data-cmd="ASTRAL" onclick="setEffect(this, 'ASTRAL')">🌌 Nova</button>
+      <button class="effect-btn btn-ice" data-cmd="ICE" onclick="setEffect(this, 'ICE')">🧊 Ice</button>
+      <button class="effect-btn btn-rain" data-cmd="RAIN" onclick="setEffect(this, 'RAIN')">🌧️ Rain</button>
+      <button class="effect-btn btn-sea btn-full" data-cmd="SEA" onclick="setEffect(this, 'SEA')">🌊 Deep Sea Abyss</button>
     </div>
   </div>
 
-  <button class="btn-off" onclick="sendCommand('OFF')">Turn Off</button>
+  <!-- Turn off krijgt ook de functionaliteit om de actieve status te wissen of zelf actief te worden -->
+  <button class="effect-btn btn-off" data-cmd="OFF" onclick="setEffect(this, 'OFF')">Turn Off</button>
 
   <!-- Koppeling naar je JavaScript bestand -->
   <script src="script.js"></script>

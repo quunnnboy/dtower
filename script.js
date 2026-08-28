@@ -19,11 +19,27 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// --- CACHING FUNCTIE: Laad opgeslagen waarden bij het openen van de app ---
+// --- NIEUWE FUNCTIE: Visuele knop status & Commando sturen ---
+function setEffect(btnElement, command) {
+  // 1. Verwijder de 'active' class van alle knoppen
+  document.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'));
+  
+  // 2. Voeg de 'active' class toe aan de geklikte knop
+  btnElement.classList.add('active');
+  
+  // 3. Sla de actieve modus op in de cache
+  localStorage.setItem('activeMode', command);
+
+  // 4. Stuur het commando naar de ESP32
+  sendCommand(command);
+}
+
+// --- CACHING FUNCTIE AANGEPAST: Laad opgeslagen waarden en actieve knop ---
 window.addEventListener('DOMContentLoaded', () => {
   const savedColor = localStorage.getItem('diceColor');
   const savedBright = localStorage.getItem('diceBright');
   const savedSpeed = localStorage.getItem('diceSpeed');
+  const savedMode = localStorage.getItem('activeMode'); // Haal de laatste modus op
 
   if (savedColor) {
     document.getElementById('customColor').value = savedColor;
@@ -35,6 +51,14 @@ window.addEventListener('DOMContentLoaded', () => {
   if (savedSpeed) {
     document.getElementById('speedSlider').value = savedSpeed;
     document.getElementById('speedVal').innerText = savedSpeed;
+  }
+  
+  // Zet de juiste knop op actief als je de app opent
+  if (savedMode) {
+    const activeBtn = document.querySelector(`.effect-btn[data-cmd="${savedMode}"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+    }
   }
 });
 

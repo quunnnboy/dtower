@@ -1,9 +1,11 @@
-const CACHE_NAME = "dicetower-cache-v1";
+const CACHE_NAME = "dicetower-cache-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./style.css",
+  "./script.js",
   "./manifest.json"
-  // Als je icoontjes toevoegt, zet ze dan hieronder erbij:
+  // Vergeet niet hier later je iconen toe te voegen als je die hebt!
   // "./icon-192.png",
   // "./icon-512.png"
 ];
@@ -22,7 +24,6 @@ self.addEventListener("install", event => {
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
-      // Geef de gecachete versie terug, of haal hem van internet als hij er niet is
       return response || fetch(event.request);
     })
   );

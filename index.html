@@ -4,67 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dice Tower Controller</title>
-  <style>
-    /* =========================================
-       CSS STYLING (Hier zit je 'CSS bestand')
-       ========================================= */
-    body { font-family: sans-serif; text-align: center; padding: 15px; background: #1a1a1a; color: #fff; }
-    
-    button { 
-      display: block; width: 100%; padding: 15px; font-size: 16px; 
-      font-weight: bold; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; 
-    }
-    button:active { transform: scale(0.95); }
-    
-    .btn-connect { background: #2196F3; color: white; width: 80%; max-width: 300px; margin: 10px auto; }
-    
-    /* Paneel styling */
-    .control-panel {
-      margin: 15px auto; padding: 15px; background: #333;
-      border-radius: 12px; width: 90%; max-width: 350px; box-sizing: border-box;
-    }
-    .control-panel p { margin: 0 0 10px 0; font-weight: bold; font-size: 15px; text-align: left; }
-    
-    input[type="color"] {
-      -webkit-appearance: none; border: none; width: 100%; height: 50px;
-      border-radius: 8px; cursor: pointer; background: none;
-    }
-    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-    input[type="color"]::-webkit-color-swatch { border: 2px solid #fff; border-radius: 8px; }
-    input[type="range"] { width: 100%; margin: 10px 0; }
-
-    /* CSS Grid voor de knoppen BINNEN de panelen */
-    .effect-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;
-    }
-    .btn-full { grid-column: span 2; }
-    
-    /* Kleuren voor Dynamische Effecten */
-    .btn-swirl { background: #2ecc71; color: black; }
-    .btn-heart { background: #c0392b; color: white; }
-    .btn-breath { background: #8e44ad; color: white; }
-    .btn-spark { background: #f39c12; color: black; }
-
-    /* Kleuren voor Vaste Thema Effecten */
-    .btn-crit { background: #ffd700; color: black; }
-    .btn-rainbow { background: linear-gradient(45deg, #f06, #4a90e2); color: white; }
-    .btn-light { background: #607d8b; color: white; }
-    .btn-fire { background: #fb8c00; color: white; }
-    .btn-volc { background: #d35400; color: white; }
-    .btn-forest { background: #27ae60; color: white; }
-    .btn-astral { background: #4a235a; color: white; } 
-    .btn-ice { background: #00cec9; color: black; }
-    .btn-rain { background: #34495e; color: white; }
-    .btn-sea { background: #130f40; color: #48dbfb; }
-    
-    .btn-off { background: #424242; color: white; width: 90%; max-width: 350px; margin: 20px auto 40px auto; }
-  </style>
+  
+  <!-- Koppeling naar je CSS bestand -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-  <!-- =========================================
-       HTML STRUCTUUR (Wat je ziet op het scherm)
-       ========================================= -->
   <h2>🎲 Dice Tower</h2>
   <button class="btn-connect" onclick="connectBLE()">🔗 Verbind met Toren</button>
 
@@ -93,7 +39,6 @@
   <div class="control-panel">
     <p>🔮 Natuur & Magie Effecten:</p>
     
-    <!-- D&D Essentials -->
     <div class="effect-grid">
       <button class="btn-crit btn-full" onclick="sendCommand('CRIT')">✨ Natural 20 Flash</button>
       <button class="btn-rainbow btn-full" onclick="sendCommand('RAINBOW')">🌈 Rainbow</button>
@@ -102,7 +47,6 @@
 
     <hr style="margin: 15px 0; border: 0.5px solid #555;">
     
-    <!-- De Nieuwe Werelden -->
     <div class="effect-grid">
       <button class="btn-fire" onclick="sendCommand('FIRE')">🔥 Vuur</button>
       <button class="btn-volc" onclick="sendCommand('VOLC')">🌋 Vulkaan</button>
@@ -117,79 +61,9 @@
     </div>
   </div>
 
-  <!-- Uitzetten -->
   <button class="btn-off" onclick="sendCommand('OFF')">Uitzetten</button>
 
-  <!-- =========================================
-       JAVASCRIPT (De logica & Bluetooth verbinding)
-       ========================================= -->
-  <script>
-    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-
-    let rxCharacteristic = null;
-    let lastSendTime = 0; 
-
-    // Verbinden met de toren
-    async function connectBLE() {
-      try {
-        const device = await navigator.bluetooth.requestDevice({
-          filters: [{ name: 'DiceTower_Skull' }],
-          optionalServices: [SERVICE_UUID]
-        });
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(SERVICE_UUID);
-        rxCharacteristic = await service.getCharacteristic(RX_CHAR_UUID);
-        alert("Succesvol verbonden!");
-      } catch (error) { 
-        console.error("Verbinding mislukt:", error); 
-      }
-    }
-
-    // Commando's doorsturen naar de ESP32
-    async function sendCommand(command) {
-      if (!rxCharacteristic) return;
-      try {
-        const encoder = new TextEncoder();
-        await rxCharacteristic.writeValue(encoder.encode(command));
-      } catch (error) { 
-        console.error("Fout bij verzenden:", error); 
-      }
-    }
-
-    // Color Picker
-    document.getElementById('customColor').addEventListener('input', function(e) {
-      const now = Date.now();
-      if (now - lastSendTime > 50) { // Throttle (max 20 berichten per seconde)
-        sendCommand(e.target.value.toUpperCase());
-        lastSendTime = now;
-      }
-    });
-
-    // Helderheid Slider
-    document.getElementById('brightnessSlider').addEventListener('input', function(e) {
-      document.getElementById('brightVal').innerText = Math.round((e.target.value / 255) * 100);
-      const now = Date.now();
-      if (now - lastSendTime > 50) { 
-        sendCommand("BR:" + e.target.value); 
-        lastSendTime = now; 
-      }
-    });
-
-    // Snelheid Slider
-    document.getElementById('speedSlider').addEventListener('input', function(e) {
-      document.getElementById('speedVal').innerText = e.target.value;
-      const now = Date.now();
-      if (now - lastSendTime > 50) { 
-        sendCommand("SP:" + e.target.value); 
-        lastSendTime = now; 
-      }
-    });
-
-    // Zorg dat de exacte waarde 100% wordt doorgestuurd als de gebruiker stopt met slepen
-    document.getElementById('customColor').addEventListener('change', (e) => sendCommand(e.target.value.toUpperCase()));
-    document.getElementById('brightnessSlider').addEventListener('change', (e) => sendCommand("BR:" + e.target.value));
-    document.getElementById('speedSlider').addEventListener('change', (e) => sendCommand("SP:" + e.target.value));
-  </script>
+  <!-- Koppeling naar je JavaScript bestand -->
+  <script src="script.js"></script>
 </body>
 </html>

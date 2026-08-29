@@ -33,6 +33,42 @@ button:active {
   margin: 10px auto; 
 }
 
+/* =========================================
+   VERBONDEN TORENS LIJST
+   ========================================= */
+.tower-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #444;
+}
+
+.tower-item span {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.tower-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Extra styling om de normale buttons te overschrijven voor deze kleintjes */
+.btn-small {
+  padding: 8px 12px;
+  font-size: 12px;
+  width: auto;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.btn-identify { background: #0984e3; color: white; }
+.btn-disconnect { background: #d63031; color: white; }
+
 /* Paneel styling */
 .control-panel {
   margin: 15px auto; 

@@ -110,3 +110,60 @@ function onDisconnected(event) {
 function updateConnectButton() {
   // Let op: zorg dat je connect-knop in de HTML de class 'btn-connect' heeft, 
   // of verander '.btn-connect' hieronder naar het ID van je knop (bijv. '#
+
+// --- NIEUW: LIJST MET TORENS GENEREREN ---
+function renderTowersList() {
+  const panel = document.getElementById('towers-panel');
+  const list = document.getElementById('towers-list');
+  
+  // Als er geen torens zijn, verberg het paneel
+  if (connectedTowers.length === 0) {
+    panel.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+  
+  // Anders, laat het paneel zien
+  panel.style.display = 'block';
+  list.innerHTML = ''; // Maak leeg voor we opnieuw vullen
+  
+  connectedTowers.forEach((tower, index) => {
+    const towerId = tower.device.id;
+    const towerName = tower.device.name || "Dice Tower";
+    
+    // Voeg HTML toe voor elke verbonden toren
+    list.innerHTML += `
+      <div class="tower-item">
+        <span>🎲 ${towerName} #${index + 1}</span>
+        <div class="tower-actions">
+          <button class="btn-small btn-identify" onclick="identifyTower('${towerId}')">👁️ ID</button>
+          <button class="btn-small btn-disconnect" onclick="disconnectTower('${towerId}')">❌ Disconnect</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// --- NIEUW: IDENTIFY COMMANDO (Oog-knop) ---
+async function identifyTower(id) {
+  // Zoek de juiste toren in de array
+  const tower = connectedTowers.find(t => t.device.id === id);
+  if (!tower) return;
+  
+  try {
+    // Stuur het commando "IDENTIFY" specifiek naar deze éne toren (niet naar de hele groep!)
+    const encoder = new TextEncoder();
+    await tower.rxCharacteristic.writeValue(encoder.encode("IDENTIFY"));
+  } catch (error) {
+    console.error("Identify mislukt:", error);
+  }
+}
+
+// --- NIEUW: DISCONNECT COMMANDO (Kruis-knop) ---
+function disconnectTower(id) {
+  const tower = connectedTowers.find(t => t.device.id === id);
+  if (tower && tower.device.gatt.connected) {
+    tower.device.gatt.disconnect(); // Verbreekt de Bluetooth connectie
+    // De browser triggert nu automatisch je bestaande onDisconnected() functie!
+  }
+}
